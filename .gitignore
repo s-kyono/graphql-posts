@@ -33,3 +33,6 @@ app/database/*
 
 # Local self-signed certificates
 docker/nginx/ssl/
+
+
+doc/memorys
