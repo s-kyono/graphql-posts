@@ -1,0 +1,33 @@
+#!/usr/bin/env sh
+set -eu
+
+ROOT_DIR="$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)"
+CODEX_BIN="${CODEX_BIN:-}"
+
+if [ -z "$CODEX_BIN" ]; then
+  CODEX_BIN="$(command -v codex 2>/dev/null || true)"
+fi
+
+if [ -z "$CODEX_BIN" ]; then
+  for candidate in "$HOME"/.vscode/extensions/openai.chatgpt-*/bin/macos-aarch64/codex; do
+    if [ -x "$candidate" ]; then
+      CODEX_BIN="$candidate"
+      break
+    fi
+  done
+fi
+
+if [ -z "$CODEX_BIN" ]; then
+  echo "codex executable not found. Set CODEX_BIN=/path/to/codex and retry." >&2
+  exit 127
+fi
+
+cd "$ROOT_DIR"
+exec "$CODEX_BIN" \
+  -c 'mcp_servers.playwright-local.command="npx"' \
+  -c 'mcp_servers.playwright-local.env={npm_config_cache=".mcp-cache/npm",PLAYWRIGHT_BROWSERS_PATH=".mcp-cache/ms-playwright"}' \
+  -c 'mcp_servers.playwright-local.args=["-y","@playwright/mcp@latest","--allowed-hosts","localhost,127.0.0.1","--allowed-origins","https://127.0.0.1;https://localhost;http://127.0.0.1:8025;http://localhost:8025","--block-service-workers"]' \
+  -c 'mcp_servers.sqlite-readonly.command="uv"' \
+  -c 'mcp_servers.sqlite-readonly.args=["run","--python","3.14","--with","mcp","python","script/mcp/sqlite_readonly_server.py"]' \
+  -c 'mcp_servers.sqlite-readonly.env={SQLITE_DB_PATH="app/database/app.db",UV_CACHE_DIR=".mcp-cache/uv"}' \
+  "$@"

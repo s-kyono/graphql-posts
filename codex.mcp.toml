@@ -1,0 +1,31 @@
+[mcp_servers.playwright-local]
+command = "npx"
+args = [
+  "-y",
+  "@playwright/mcp@latest",
+  "--allowed-hosts",
+  "localhost,127.0.0.1",
+  "--allowed-origins",
+  "https://127.0.0.1;https://localhost;http://127.0.0.1:8025;http://localhost:8025",
+  "--block-service-workers",
+]
+
+[mcp_servers.playwright-local.env]
+npm_config_cache = ".mcp-cache/npm"
+PLAYWRIGHT_BROWSERS_PATH = ".mcp-cache/ms-playwright"
+
+[mcp_servers.sqlite-readonly]
+command = "uv"
+args = [
+  "run",
+  "--python",
+  "3.14",
+  "--with",
+  "mcp",
+  "python",
+  "script/mcp/sqlite_readonly_server.py",
+]
+
+[mcp_servers.sqlite-readonly.env]
+SQLITE_DB_PATH = "app/database/app.db"
+UV_CACHE_DIR = ".mcp-cache/uv"

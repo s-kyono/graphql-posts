@@ -1,0 +1,107 @@
+x-env-file: &default-env-file
+  env_file:
+    - path: .env.local
+      required: false
+
+services:
+  nginx:
+    <<: *default-env-file
+    image: nginx:alpine
+    container_name: posts_nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+      - ./nginx/ssl:/etc/nginx/ssl:ro
+    depends_on:
+      - client
+      - graphql
+    networks:
+      - microservices_net
+    restart: always
+
+  graphql:
+    <<: *default-env-file
+    build:
+      context: ../
+      dockerfile: docker/graphql/Dockerfile
+    container_name: posts_graphql
+    volumes:
+      - ../graphql:/usr/src/app
+      - /usr/src/app/node_modules
+      - pnpm_cache_graphql:/root/.local/share/pnpm/store
+    environment:
+      NODE_ENV: ${GRAPHQL_NODE_ENV:-development}
+      HTTP_BACKEND_URL: ${HTTP_BACKEND_URL:-http://nginx/api}
+      HTTPS_BACKEND_URL: ${HTTPS_BACKEND_URL:-https://nginx/api}
+    depends_on:
+      - app
+    networks:
+      - microservices_net
+    restart: always
+
+  app:
+    <<: *default-env-file
+    build:
+      context: ../
+      dockerfile: docker/app/Dockerfile
+    container_name: posts_app
+    volumes:
+      - ../app:/usr/src/app
+      - ../graphql/shared/schemas:/usr/src/graphql/shared/schemas
+      - /usr/src/app/node_modules
+      - pnpm_cache_app:/root/.local/share/pnpm/store
+    environment:
+      NODE_ENV: ${APP_NODE_ENV:-development}
+      WATCHPACK_POLLING: ${WATCHPACK_POLLING:-true}
+      SMTP_HOST: ${SMTP_HOST:-mail}
+      SMTP_PORT: ${SMTP_PORT:-1025}
+    depends_on:
+      - mail
+    networks:
+      - microservices_net
+    restart: always
+
+  mail:
+    <<: *default-env-file
+    build:
+      context: ../
+      dockerfile: docker/mail/Dockerfile
+    container_name: posts_mail
+    ports:
+      - "${MAIL_UI_PORT:-8025}:8025"
+    networks:
+      - microservices_net
+    restart: always
+
+  client:
+    <<: *default-env-file
+    build:
+      context: ../
+      dockerfile: docker/client/Dockerfile
+    container_name: posts_client
+    volumes:
+      - ../client:/usr/src/app
+      - ../graphql/shared/schemas:/usr/src/graphql/shared/schemas
+      - ../graphql/generated:/usr/src/graphql/generated
+      - /usr/src/app/node_modules
+      - pnpm_cache_client:/root/.local/share/pnpm/store
+    environment:
+      NODE_ENV: ${CLIENT_NODE_ENV:-development}
+      REACT_APP_HTTP_URL: ${REACT_APP_HTTP_URL:-http://nginx/graphql}
+      REACT_APP_HTTPS_URL: ${REACT_APP_HTTPS_URL:-https://nginx/graphql}
+      REACT_APP_WS_URL: ${REACT_APP_WS_URL:-ws://nginx/subscriptions}
+      REACT_APP_WSS_URL: ${REACT_APP_WSS_URL:-wss://nginx/subscriptions}
+    networks:
+      - microservices_net
+    restart: always
+
+networks:
+  microservices_net:
+    driver: bridge
+
+volumes:
+  pnpm_cache_graphql:
+  pnpm_cache_app:
+  pnpm_cache_client:

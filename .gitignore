@@ -1,0 +1,38 @@
+.mcp-cache/
+.pnpm-store/
+__pycache__/
+.playwright-mcp
+.claude/
+
+# OS
+.DS_Store
+
+
+.claude/settings.local.json
+
+# Dependencies
+node_modules/
+
+# Build/test output
+dist/
+build/
+coverage/
+
+# Local env files
+.env
+.env.*
+!.env.example
+!.env.exemple
+
+# Local database/runtime data
+*.db
+*.sqlite
+*.sqlite3
+app/database/*
+!app/database/.gitkeep
+
+# Local self-signed certificates
+docker/nginx/ssl/
+
+
+doc/memorys

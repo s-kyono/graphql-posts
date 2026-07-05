@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <style>
+    /* 共通の線の設定 */
+    .draw-item {
+      stroke: currentColor;
+      stroke-width: 8;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      fill: none;
+      animation-fill-mode: forwards;
+    }
+
+    /* 1. 円のアニメーション（0秒〜0.6秒） */
+    .circle {
+      stroke-dasharray: 252;
+      stroke-dashoffset: 252;
+      transform: rotate(-90deg);
+      transform-origin: 50px 50px;
+      animation: drawCircle 0.6s ease-out forwards;
+    }
+
+    /* 2. チェックマーク全体（円が描き終わるまで完全に非表示） */
+    .checkmark-group {
+      visibility: hidden;
+      animation: showCheckmark 0s linear 0.6s forwards; /* 0.6秒後に表示 */
+    }
+
+    /* 3. 短い線（左上から左下へ：0.6秒〜0.75秒） */
+    .check-short {
+      stroke-dasharray: 30; /* ハミ出さないように数値を大きめに修正 */
+      stroke-dashoffset: 30;
+      animation: drawLine 0.15s ease-in-out 0.6s forwards;
+    }
+
+    /* 4. 長い線（左下から右上へ：0.75秒〜1.1秒） */
+    .check-long {
+      stroke-dasharray: 50; /* ハミ出さないように数値を大きめに修正 */
+      stroke-dashoffset: 50;
+      animation: drawLine 0.35s ease-in-out 0.75s forwards;
+    }
+
+    /* キーフレーム定義 */
+    @keyframes drawCircle {
+      to { stroke-dashoffset: 0; }
+    }
+    @keyframes drawLine {
+      to { stroke-dashoffset: 0; }
+    }
+    @keyframes showCheckmark {
+      to { visibility: visible; }
+    }
+  </style>
+
+  <circle class="draw-item circle" cx="50" cy="50" r="40" />
+
+  <g class="checkmark-group">
+    <line class="draw-item check-short" x1="30" y1="52" x2="45" y2="67" />
+
+    <line class="draw-item check-long" x1="45" y1="67" x2="70" y2="33" />
+  </g>
+</svg>
