@@ -37,7 +37,6 @@ type CreateUserResult = {
   createUser: {
     userId: string;
     email: string;
-    password: string;
     message: string;
   };
 };
@@ -49,11 +48,10 @@ const LOGOUT_MUTATION = `
 `;
 
 const CREATE_USER_MUTATION = `
-  mutation CreateUser($email: String!, $password: String) {
+  mutation CreateUser($email: String!, $password: String!) {
     createUser(email: $email, password: $password) {
       userId
       email
-      password
       message
     }
   }
@@ -114,11 +112,10 @@ export async function logoutMutation(): Promise<boolean> {
 
 export async function createUserMutation(
   email: string,
-  password?: string,
+  password: string,
 ): Promise<{
   userId: string;
   email: string;
-  password: string;
   message: string;
 }> {
   try {

@@ -568,7 +568,6 @@ describe('Mutation.createUser', () => {
       json: async () => ({
         email: 'new-user@example.com',
         message: 'User, Auth, and Profile created successfully!',
-        password: 'generated-password',
         userId: 'user-1',
       }),
     } as Response);
@@ -577,10 +576,9 @@ describe('Mutation.createUser', () => {
       contextValue: createContext(),
       schema: createSchema(),
       source: `
-        mutation CreateUser($email: String!, $password: String) {
+        mutation CreateUser($email: String!, $password: String!) {
           createUser(email: $email, password: $password) {
             userId
-            password
             email
             message
           }
@@ -596,7 +594,6 @@ describe('Mutation.createUser', () => {
     expect(result.data?.createUser).toEqual({
       email: 'new-user@example.com',
       message: 'User, Auth, and Profile created successfully!',
-      password: 'generated-password',
       userId: 'user-1',
     });
     expect(fetchMock).toHaveBeenCalledWith('http://nginx/api/users', {
@@ -618,10 +615,9 @@ describe('Mutation.createUser', () => {
       contextValue: createContext(),
       schema: createSchema(),
       source: `
-        mutation CreateUser($email: String!, $password: String) {
+        mutation CreateUser($email: String!, $password: String!) {
           createUser(email: $email, password: $password) {
             userId
-            password
             email
             message
           }
@@ -650,10 +646,9 @@ describe('Mutation.createUser', () => {
       contextValue: createContext(),
       schema: createSchema(),
       source: `
-        mutation CreateUser($email: String!, $password: String) {
+        mutation CreateUser($email: String!, $password: String!) {
           createUser(email: $email, password: $password) {
             userId
-            password
             email
             message
           }
@@ -899,7 +894,6 @@ describe('Subscription.userCreated', () => {
       json: async () => ({
         email: 'new-user@example.com',
         message: 'User, Auth, and Profile created successfully!',
-        password: 'generated-password',
         userId: 'user-1',
       }),
     } as Response);
@@ -909,7 +903,6 @@ describe('Subscription.userCreated', () => {
         subscription UserCreated {
           userCreated {
             userId
-            password
             email
             message
           }
@@ -925,10 +918,9 @@ describe('Subscription.userCreated', () => {
         contextValue: createContext(),
         schema,
         source: `
-          mutation CreateUser($email: String!, $password: String) {
+          mutation CreateUser($email: String!, $password: String!) {
             createUser(email: $email, password: $password) {
               userId
-              password
               email
               message
             }
@@ -947,7 +939,6 @@ describe('Subscription.userCreated', () => {
       expect(received.value.data?.userCreated).toEqual({
         email: 'new-user@example.com',
         message: 'User, Auth, and Profile created successfully!',
-        password: 'generated-password',
         userId: 'user-1',
       });
       expect(fetchMock).toHaveBeenCalledTimes(1);

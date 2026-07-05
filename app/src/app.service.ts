@@ -1,4 +1,9 @@
-import { Injectable, OnModuleInit, ConflictException } from '@nestjs/common';
+import {
+  Injectable,
+  OnModuleInit,
+  ConflictException,
+  BadRequestException,
+} from '@nestjs/common';
 import * as bcryptjs from 'bcryptjs';
 import { v4 as uuidv4 } from 'uuid';
 import { createClient } from '@libsql/client';
@@ -278,21 +283,23 @@ export const sessionRepository = {
 
 export const createUserUseCase = async (
   email: string,
-  password?: string
+  password: string,
 ): Promise<{
   userId: string;
   email: string;
-  password: string;
   message: string;
 }> => {
+  if (!password || password.length < 8) {
+    throw new BadRequestException('パスワードは8文字以上にしてください。');
+  }
+
   const existingUser = await userRepository.findByEmailOrUuid(email);
 
   if (existingUser) {
     throw new ConflictException('このメールアドレスは既に登録されています。');
   }
 
-  const generatedPassword = password ?? Math.random().toString(36).slice(-6);
-  const passwordHash = await bcryptjs.hash(generatedPassword, 10);
+  const passwordHash = await bcryptjs.hash(password, 10);
   const userUuid = uuidv4();
 
   const saveUser = await userRepository.save({
@@ -317,7 +324,6 @@ export const createUserUseCase = async (
   return {
     userId: saveUser.uuid,
     email: saveUser.email,
-    password: generatedPassword,
     message: 'User, Auth, and Profile created successfully!',
   };
 };

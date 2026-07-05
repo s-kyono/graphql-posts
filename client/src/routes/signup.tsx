@@ -43,7 +43,7 @@ function SignupPage() {
     signupFormSchema,
     async (data) => {
       const created = await createUserMutation(data.email, data.password);
-      await loginQuery({ email: created.email, password: created.password });
+      await loginQuery({ email: created.email, password: data.password });
       const user = await fetchCurrentUser();
       queryClient.setQueryData<User | null>(["me"], user);
     },

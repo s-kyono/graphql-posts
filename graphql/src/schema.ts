@@ -67,7 +67,6 @@ const CreateUserResponseRef =
 builder.objectType(CreateUserResponseRef, {
   fields: (t) => ({
     userId: t.exposeString("userId"),
-    password: t.exposeString("password"),
     email: t.exposeString("email"),
     message: t.exposeString("message"),
   }),
@@ -275,7 +274,7 @@ builder.mutationType({
       type: CreateUserResponseRef,
       args: {
         email: t.arg.string({ required: true }),
-        password: t.arg.string(),
+        password: t.arg.string({ required: true }),
       },
       resolve: async (_, args) => {
         const parsed = createUserSchema.safeParse(args);

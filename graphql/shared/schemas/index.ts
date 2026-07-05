@@ -38,7 +38,7 @@ export type LoginByEmailOrUserIdInput = z.infer<
 
 export const createUserSchema = z.object({
   email: z.string().email("有効なメールアドレスを入力してください"),
-  password: z.string().min(8, "パスワードは8文字以上にしてください").optional(),
+  password: z.string().min(8, "パスワードは8文字以上にしてください"),
 });
 
 export type CreateUserInput = z.infer<typeof createUserSchema>;
@@ -65,7 +65,6 @@ export type LoginResponseData = z.infer<typeof loginResponseSchema>;
 
 export const createUserResponseSchema = z.object({
   userId: z.string(),
-  password: z.string(),
   email: z.string(),
   message: z.string(),
 });

@@ -16,18 +16,18 @@ for i in $(seq 1 100)
 do
   # 連番を使ったメールアドレスを生成
   EMAIL="test-user-${i}@example.com"
+  PASS=$(openssl rand -base64 18 | tr -dc 'A-Za-z0-9' | head -c 12)
 
   # 自己署名証明書でも通せるように -k を付ける
   RESPONSE=$(curl -s -k -X POST "$GRAPHQL_URL" \
     -H "Content-Type: application/json" \
     --data-binary @- <<JSON
-{"query":"mutation CreateUser(\$email: String!) { createUser(email: \$email) { userId password } }","variables":{"email":"$EMAIL"}}
+{"query":"mutation CreateUser(\$email: String!, \$password: String!) { createUser(email: \$email, password: \$password) { userId } }","variables":{"email":"$EMAIL","password":"$PASS"}}
 JSON
   )
 
   # jqでデータが正しく取れているか抽出
   UUID=$(echo "$RESPONSE" | jq -r '.data.createUser.userId // empty')
-  PASS=$(echo "$RESPONSE" | jq -r '.data.createUser.password // empty')
 
   # jqでデータが正しく取れているか抽出
   if [ -n "$UUID" ] && [ -n "$PASS" ]; then

@@ -28,7 +28,7 @@ export class AppController {
   @Post('users')
   async createUser(
     @Body('email') email: string,
-    @Body('password') password?: string,
+    @Body('password') password: string,
   ) {
     return await createUserUseCase(email, password);
   }
