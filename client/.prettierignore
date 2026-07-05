@@ -1,0 +1,8 @@
+**/*.css
+**/*.ts
+**/*.tsx
+**/*.js
+**/*.jsx
+**/*.json
+dist
+node_modules

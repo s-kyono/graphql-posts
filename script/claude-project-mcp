@@ -1,0 +1,26 @@
+#!/usr/bin/env sh
+set -eu
+
+ROOT_DIR="$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)"
+CLAUDE_BIN="${CLAUDE_BIN:-}"
+
+if [ -z "$CLAUDE_BIN" ]; then
+  CLAUDE_BIN="$(command -v claude 2>/dev/null || true)"
+fi
+
+if [ -z "$CLAUDE_BIN" ]; then
+  for candidate in "$HOME"/.volta/bin/claude "$HOME"/.npm-global/bin/claude "$HOME"/.local/bin/claude; do
+    if [ -x "$candidate" ]; then
+      CLAUDE_BIN="$candidate"
+      break
+    fi
+  done
+fi
+
+if [ -z "$CLAUDE_BIN" ]; then
+  echo "claude executable not found. Set CLAUDE_BIN=/path/to/claude and retry." >&2
+  exit 127
+fi
+
+cd "$ROOT_DIR"
+exec "$CLAUDE_BIN" --mcp-config "$ROOT_DIR/.mcp.json" "$@"

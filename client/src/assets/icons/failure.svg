@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <style>
+    /* 共通の線の設定 */
+    .draw-item {
+      stroke: currentColor;
+      stroke-width: 8;
+      stroke-linecap: round;
+      fill: none;
+      animation-fill-mode: forwards;
+    }
+
+    /* 1. 円のアニメーション（上真ん中起点、右回り） */
+    .circle {
+      stroke-dasharray: 252;
+      stroke-dashoffset: 252;
+      transform: rotate(-90deg); /* 上真ん中を起点にするため90度回転 */
+      transform-origin: 50px 50px;
+      animation: drawCircle 0.6s ease-out forwards;
+    }
+
+    /* 2. 左上からの斜め線（円の後にスタート） */
+    .line-left {
+      stroke-dasharray: 43;
+      stroke-dashoffset: 43;
+      animation: drawLine 0.3s ease-out 0.6s forwards;
+    }
+
+    /* 3. 右上からの斜め線（左の線の後にスタート） */
+    .line-right {
+      stroke-dasharray: 43;
+      stroke-dashoffset: 43;
+      animation: drawLine 0.3s ease-out 0.9s forwards;
+    }
+
+    /* キーフレーム定義 */
+    @keyframes drawCircle {
+      to { stroke-dashoffset: 0; }
+    }
+    @keyframes drawLine {
+      to { stroke-dashoffset: 0; }
+    }
+  </style>
+
+  <circle class="draw-item circle" cx="50" cy="50" r="40" />
+
+  <line class="draw-item line-left" x1="35" y1="35" x2="65" y2="65" />
+
+  <line class="draw-item line-right" x1="65" y1="35" x2="35" y2="65" />
+</svg>
